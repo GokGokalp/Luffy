@@ -1,6 +1,6 @@
 using System;
 
-namespace Luffy
+namespace Luffy.CircuitBreaker
 {
     public class CircuitBreakerOptions : ICircuitBreakerOptions
     {

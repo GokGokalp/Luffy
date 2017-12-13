@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Luffy
+namespace Luffy.CircuitBreaker
 {
     public class CircuitBreaker
     {
@@ -11,10 +11,10 @@ namespace Luffy
         public bool IsClosed { get { return _stateStore.IsClosed; } }
         public bool IsOpen { get { return !IsClosed; } }
 
-        public CircuitBreaker(ICircuitBreakerOptions circuitBreakerOptions)
+        public CircuitBreaker(ICircuitBreakerOptions circuitBreakerOptions, ICircuitBreakerStateStore stateStore)
         {
             _circuitBreakerOptions = circuitBreakerOptions;
-            _stateStore = new CircuitBreakerStateStore(circuitBreakerOptions);
+            _stateStore = stateStore;
         }
 
         public void ExecuteAction(Action action)
