@@ -2,7 +2,7 @@ using System;
 
 namespace Luffy.CircuitBreaker
 {
-    public class CircuitBreakerOptions : ICircuitBreakerOptions
+    public class CircuitBreakerOptions
     {
         public int ExceptionThreshold {get; set;}
         public int SuccessThresholdWhenCircuitBreakerHalfOpenStatus { get; set; }

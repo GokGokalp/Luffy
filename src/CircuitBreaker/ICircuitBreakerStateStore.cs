@@ -1,22 +1,20 @@
 using System;
 
-namespace Luffy.CircuitBreaker
+namespace Luffy.CircuitBreaker 
 {
-    public enum CircuitBreakerStateEnum
+    public enum CircuitBreakerStateEnum 
     {
         Open,
         HalfOpen,
         Closed
     }
 
-    public interface ICircuitBreakerStateStore
-    {
+    public interface ICircuitBreakerStateStore {
         CircuitBreakerStateEnum State { get; set; }
         Exception LastException { get; set; }
-        DateTime LastStateChangedDateUtc { get; set;}
-        void Trip(Exception ex);
-        void Reset();
-        void HalfOpen();
-        bool IsClosed { get; }
+        DateTime LastStateChangedDateUtc { get; set; }
+        bool IsClosed { get; set; }
+        int ExceptionAttempt { get; set; }
+        int SuccessAttempt { get; set; }
     }
 }

@@ -1,23 +1,65 @@
 using System;
 using System.Threading.Tasks;
+using Luffy.CircuitBreaker;
+using Luffy.RetryMechanism;
 
 namespace Luffy
 {
-    public class Luffy : ILuffy
+    public class Luffy : IExecutionOperation
     {
-        public Task Execute(Action action)
+        private static readonly Lazy<Luffy> _Instance = new Lazy<Luffy>(() => new Luffy());
+        private RetryMechanismOptions _retryMechanismOptions;
+        private CircuitBreakerOptions _circuitBreakerOptions;
+        private static ICircuitBreakerStateStore _circuitBreakerStateStore = new CircuitBreakerStateStore();
+
+        public static Luffy Instance
         {
-            throw new NotImplementedException();
+            get
+            {
+                return _Instance.Value;
+            }
         }
 
-        public Task ExecuteAsync(Func<Task> func)
+        private Luffy(){}
+
+        public Luffy UseRetry(RetryMechanismOptions retryMechanismOptions)
         {
-            throw new NotImplementedException();
+            _retryMechanismOptions = retryMechanismOptions;
+
+            return this;
         }
 
-        public Task<T> ExecuteAsync<T>(Func<Task<T>> func)
+        public Luffy UseCircuitBreaker(CircuitBreakerOptions circuitBreakerOptions, ICircuitBreakerStateStore stateStore = null)
         {
-            throw new NotImplementedException();
+            _circuitBreakerOptions = circuitBreakerOptions;
+
+            if(stateStore != null)
+            {
+                _circuitBreakerStateStore = stateStore;
+            }
+
+            return this;
+        }
+
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
+        {
+            if(_retryMechanismOptions == null || _circuitBreakerOptions == null)
+            {
+                throw new ArgumentNullException("You must use Retry or CircuitBreaker method!");
+            }
+
+            try
+            {
+                RetryHelper retryHelper = new RetryHelper();
+
+                return await retryHelper.Retry(func, _retryMechanismOptions);
+            }
+            catch
+            {
+                CircuitBreakerHelper circuitBreakerHelper = new CircuitBreakerHelper(_circuitBreakerOptions, _circuitBreakerStateStore);
+
+                return await circuitBreakerHelper.ExecuteAsync(func);
+            }
         }
     }
 }
