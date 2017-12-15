@@ -36,8 +36,6 @@ namespace LuffyCore.RetryMechanism
                 }
 
                 await HandleBackOff(currentRetryCount);
-
-                await Task.Delay(_retryMechanismOptions.Interval);
             }
         }
 
