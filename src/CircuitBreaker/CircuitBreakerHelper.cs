@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Luffy.CircuitBreaker
+namespace LuffyCore.CircuitBreaker
 {
     public class CircuitBreakerHelper : IExecutionOperation
     {

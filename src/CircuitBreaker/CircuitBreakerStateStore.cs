@@ -1,6 +1,6 @@
 using System;
 
-namespace Luffy.CircuitBreaker
+namespace LuffyCore.CircuitBreaker
 {
     public class CircuitBreakerStateStore : ICircuitBreakerStateStore
     {

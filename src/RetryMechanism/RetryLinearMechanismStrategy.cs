@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Luffy.RetryMechanism
+namespace LuffyCore.RetryMechanism
 {
     public class RetryLinearMechanismStrategy : RetryMechanismBase, IRetryMechanismStrategy
     {

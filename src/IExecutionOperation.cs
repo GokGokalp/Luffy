@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Luffy
+namespace LuffyCore
 {
     public interface IExecutionOperation
     {

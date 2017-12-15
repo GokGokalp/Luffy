@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Luffy.CircuitBreaker;
-using Luffy.RetryMechanism;
+using LuffyCore.CircuitBreaker;
+using LuffyCore.RetryMechanism;
 
-namespace Luffy
+namespace LuffyCore
 {
     public class Luffy : IExecutionOperation
     {
@@ -43,7 +43,7 @@ namespace Luffy
 
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
         {
-            if(_retryMechanismOptions == null || _circuitBreakerOptions == null)
+            if(_retryMechanismOptions == null && _circuitBreakerOptions == null)
             {
                 throw new ArgumentNullException("You must use Retry or CircuitBreaker method!");
             }
@@ -56,9 +56,14 @@ namespace Luffy
             }
             catch
             {
-                CircuitBreakerHelper circuitBreakerHelper = new CircuitBreakerHelper(_circuitBreakerOptions, _circuitBreakerStateStore);
+                if(_circuitBreakerOptions != null)
+                {
+                    CircuitBreakerHelper circuitBreakerHelper = new CircuitBreakerHelper(_circuitBreakerOptions, _circuitBreakerStateStore);
 
-                return await circuitBreakerHelper.ExecuteAsync(func);
+                    return await circuitBreakerHelper.ExecuteAsync(func);
+                }
+
+                throw;
             }
         }
     }

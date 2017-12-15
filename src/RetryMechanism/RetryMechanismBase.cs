@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Luffy.RetryMechanism
+namespace LuffyCore.RetryMechanism
 {
     public abstract class RetryMechanismBase
     {

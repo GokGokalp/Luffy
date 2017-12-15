@@ -1,6 +1,6 @@
 using System;
 
-namespace Luffy.RetryMechanism
+namespace LuffyCore.RetryMechanism
 {
     public class RetryMechanismOptions
     {
