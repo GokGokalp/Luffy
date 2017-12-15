@@ -3,13 +3,13 @@
 
 ![alt tag](https://raw.githubusercontent.com/GokGokalp/Luffy/master/img/logo.jpg)
 
-Luffy is a simple resilience and transient-fault handling library.
+Luffy is a simple resilience and transient-fault handling library for .NET
 
-###Features:
+#### Features:
 - Luffy provides circuit breaker feature
 - Luffy provides retry mechanism with back-off (linear and exponentially)
 
-Usage:
+#### Usages:
 -----
 Sample usage for the circuit breaker:
 
@@ -51,7 +51,7 @@ async Task<double> RetryMechanismSample(double amount, string from, string to)
 }
 ```
 
-###Samples:
+#### Samples:
 - [Luffy.Sample]
 
 [Luffy.Sample]: https://github.com/GokGokalp/Luffy/tree/master/samples
