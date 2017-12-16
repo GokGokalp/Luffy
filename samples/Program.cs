@@ -41,7 +41,8 @@ namespace LuffyCore.Samples
         static async Task<double> CircuitBreakerSample(double amount, string from, string to)
         {
             double currentRate = await Luffy.Instance
-                                .UseCircuitBreaker(new CircuitBreakerOptions(exceptionThreshold: 5,
+                                .UseCircuitBreaker(new CircuitBreakerOptions(key: "CurrencyConverterSampleAPI",
+                                                                             exceptionThreshold: 5,
                                                                              successThresholdWhenCircuitBreakerHalfOpenStatus: 5,
                                                                              durationOfBreak: TimeSpan.FromSeconds(5)))
                                 .ExecuteAsync<double>(async () => {

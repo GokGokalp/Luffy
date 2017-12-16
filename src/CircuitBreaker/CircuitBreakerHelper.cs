@@ -9,8 +9,6 @@ namespace LuffyCore.CircuitBreaker
         private readonly CircuitBreakerOptions _circuitBreakerOptions;
         private readonly ICircuitBreakerStateStore _stateStore;
         private readonly object _halfOpenSyncObject = new Object();
-        private bool IsClosed { get { return _stateStore.IsClosed; } }
-        private bool IsOpen { get { return !IsClosed; } }
 
         public CircuitBreakerHelper(CircuitBreakerOptions circuitBreakerOptions, ICircuitBreakerStateStore stateStore)
         {
@@ -20,9 +18,9 @@ namespace LuffyCore.CircuitBreaker
 
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
         {
-            if(IsOpen)
+            if(!IsClosed(_circuitBreakerOptions.Key))
             {
-                if(_stateStore.LastStateChangedDateUtc.Add(_circuitBreakerOptions.DurationOfBreak) < DateTime.UtcNow)
+                if(_stateStore.GetLastStateChangedDateUtc(_circuitBreakerOptions.Key).Add(_circuitBreakerOptions.DurationOfBreak) < DateTime.UtcNow)
                 {
                     bool lockTaken = false;
                     try
@@ -30,18 +28,18 @@ namespace LuffyCore.CircuitBreaker
                         Monitor.TryEnter(_halfOpenSyncObject, ref lockTaken);
                         if(lockTaken)
                         {
-                            HalfOpen();
+                            HalfOpen(_circuitBreakerOptions.Key);
 
                             var result = await func.Invoke();
 
-                            Reset();
+                            Reset(_circuitBreakerOptions.Key);
 
                             return result;
                         }
                     }
                     catch(Exception ex)
                     {
-                        Trip(ex);
+                        Trip(_circuitBreakerOptions.Key, ex);
                         throw;
                     }
                     finally
@@ -53,7 +51,7 @@ namespace LuffyCore.CircuitBreaker
                     }
                 }
 
-                throw new CircuitBreakerOpenException("Circuit breaker timeout hasn't yet expired.", _stateStore.LastException);
+                throw new CircuitBreakerOpenException("Circuit breaker timeout hasn't yet expired.", _stateStore.GetLastException(_circuitBreakerOptions.Key));
             }
 
             try
@@ -64,35 +62,39 @@ namespace LuffyCore.CircuitBreaker
             }
             catch(Exception ex)
             {
-                Trip(ex);
+                Trip(_circuitBreakerOptions.Key, ex);
                 throw;
             }
         }
 
-        private void HalfOpen()
+        private bool IsClosed(string key)
         {
-            _stateStore.State = CircuitBreakerStateEnum.HalfOpen;
-            _stateStore.LastStateChangedDateUtc = DateTime.UtcNow;
+            return _stateStore.IsClosed(key);
         }
-        private void Reset()
+
+        private void HalfOpen(string key)
         {
-            if(_stateStore.SuccessAttempt >= _circuitBreakerOptions.SuccessThresholdWhenCircuitBreakerHalfOpenStatus)
+            _stateStore.ChangeState(key, CircuitBreakerStateEnum.HalfOpen);
+            _stateStore.ChangeLastStateChangedDateUtc(key, DateTime.UtcNow);
+        }
+
+        private void Reset(string key)
+        {
+            if(_stateStore.GetSuccessAttempt(key) >= _circuitBreakerOptions.SuccessThresholdWhenCircuitBreakerHalfOpenStatus)
             {
-                _stateStore.IsClosed = true;
-                _stateStore.ExceptionAttempt = 0;
-                _stateStore.SuccessAttempt = 0;
+                _stateStore.RemoveState(key);
             }
         }
 
-        private void Trip(Exception ex)
+        private void Trip(string key, Exception ex)
         {
-            _stateStore.ExceptionAttempt++;
+            _stateStore.IncreaseExceptionAttemp(key);
 
-            if(_stateStore.ExceptionAttempt >= _circuitBreakerOptions.ExceptionThreshold)
-            {                
-                _stateStore.LastException = ex;
-                _stateStore.State = CircuitBreakerStateEnum.Open;
-                _stateStore.LastStateChangedDateUtc = DateTime.UtcNow;
+            if(_stateStore.GetExceptionAttempt(key) >= _circuitBreakerOptions.ExceptionThreshold)
+            {
+                _stateStore.SetLastException(key, ex);
+                _stateStore.ChangeState(key, CircuitBreakerStateEnum.Open);
+                _stateStore.ChangeLastStateChangedDateUtc(key, DateTime.UtcNow);
             }
         }
     }

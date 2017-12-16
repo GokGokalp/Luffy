@@ -10,11 +10,16 @@ namespace LuffyCore.CircuitBreaker
     }
 
     public interface ICircuitBreakerStateStore {
-        CircuitBreakerStateEnum State { get; set; }
-        Exception LastException { get; set; }
-        DateTime LastStateChangedDateUtc { get; set; }
-        bool IsClosed { get; set; }
-        int ExceptionAttempt { get; set; }
-        int SuccessAttempt { get; set; }
+        DateTime GetLastStateChangedDateUtc(string key);
+        void ChangeLastStateChangedDateUtc(string key, DateTime date);
+        bool IsClosed(string key);
+        void ChangeState(string key, CircuitBreakerStateEnum state);
+        int GetExceptionAttempt(string key);
+        void IncreaseExceptionAttemp(string key);
+        int GetSuccessAttempt(string key);
+        void IncreaseSuccessAttemp(string key);
+        void RemoveState(string key);
+        Exception GetLastException(string key);
+        void SetLastException(string key, Exception ex);
     }
 }
