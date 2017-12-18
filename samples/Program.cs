@@ -38,6 +38,27 @@ namespace LuffyCore.Samples
             return currentRate;
         }
 
+        static async Task<double> RetryMechanismWithFallbackSample(double amount, string from, string to)
+        {
+            double currentRate = await Luffy.Instance
+                                .UseRetry(new RetryMechanismOptions(RetryPolicies.Linear,
+                                                                    retryCount: 3,
+                                                                    interval: TimeSpan.FromSeconds(5)))
+                                .ExecuteAsync<double>(async () => {
+                                    // Some API calls...
+                                    double rate = await CurrencyConverterSampleAPI(amount, from, to);
+
+                                    return rate;
+                                }, async () => {
+                                    // Some fallback scenario.
+                                    double rate = 100;
+
+                                    return await Task.FromResult(rate);                                    
+                                });
+
+            return currentRate;
+        }
+
         static async Task<double> CircuitBreakerSample(double amount, string from, string to)
         {
             double currentRate = await Luffy.Instance

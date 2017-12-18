@@ -7,7 +7,6 @@ namespace LuffyCore
 {
     public class Luffy : IExecutionOperation
     {
-        private static readonly Lazy<Luffy> _Instance = new Lazy<Luffy>(() => new Luffy());
         private RetryMechanismOptions _retryMechanismOptions;
         private CircuitBreakerOptions _circuitBreakerOptions;
         private static ICircuitBreakerStateStore _circuitBreakerStateStore = new CircuitBreakerStateStore();
@@ -16,11 +15,9 @@ namespace LuffyCore
         {
             get
             {
-                return _Instance.Value;
+                return new Luffy();;
             }
         }
-
-        private Luffy(){}
 
         public Luffy UseRetry(RetryMechanismOptions retryMechanismOptions)
         {
@@ -63,8 +60,27 @@ namespace LuffyCore
                     return await circuitBreakerHelper.ExecuteAsync(func);
                 }
 
-                throw;
+                throw;         
             }
+        }
+
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Func<Task<T>> fallbackFunc)
+        {
+            try
+            {
+                return await ExecuteAsync(func);
+            }
+            catch
+            {
+                if(fallbackFunc != null)
+                {
+                    var result = await fallbackFunc.Invoke();
+
+                    return result;
+                }
+
+                throw;
+            }  
         }
     }
 }
