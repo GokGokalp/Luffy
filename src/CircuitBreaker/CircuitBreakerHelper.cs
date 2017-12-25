@@ -80,6 +80,8 @@ namespace LuffyCore.CircuitBreaker
 
         private void Reset(string key)
         {
+            _stateStore.IncreaseSuccessAttemp(key);
+
             if(_stateStore.GetSuccessAttempt(key) >= _circuitBreakerOptions.SuccessThresholdWhenCircuitBreakerHalfOpenStatus)
             {
                 _stateStore.RemoveState(key);

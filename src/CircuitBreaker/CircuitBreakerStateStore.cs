@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace LuffyCore.CircuitBreaker
 {
     public class CircuitBreakerStateStore : ICircuitBreakerStateStore
     {
-        private readonly Dictionary<string, CircuitBreakerStateModel> _store = new Dictionary<string, CircuitBreakerStateModel>();
+        private readonly ConcurrentDictionary<string, CircuitBreakerStateModel> _store = new ConcurrentDictionary<string, CircuitBreakerStateModel>();
 
         public void ChangeLastStateChangedDateUtc(string key, DateTime date)
         {
@@ -47,6 +47,13 @@ namespace LuffyCore.CircuitBreaker
                 stateModel.ExceptionAttempt += 1;
                 _store[key] = stateModel;
             }
+            else
+            {
+                stateModel = new CircuitBreakerStateModel();
+                stateModel.ExceptionAttempt += 1;
+
+                AddStateModel(key, stateModel);
+            }
         }
 
         public DateTime GetLastStateChangedDateUtc(string key)
@@ -85,7 +92,7 @@ namespace LuffyCore.CircuitBreaker
 
         public bool IsClosed(string key)
         {
-            bool isClosed = false;
+            bool isClosed = true;
             CircuitBreakerStateModel stateModel;
             if(_store.TryGetValue(key, out stateModel))
             {
@@ -97,7 +104,8 @@ namespace LuffyCore.CircuitBreaker
 
         public void RemoveState(string key)
         {
-            _store.Remove(key);
+            CircuitBreakerStateModel stateModel;
+            _store.TryRemove(key, out stateModel);
         }
 
         public void SetLastException(string key, Exception ex)
@@ -121,15 +129,10 @@ namespace LuffyCore.CircuitBreaker
 
             return lastException;
         }
-    }
 
-    public class CircuitBreakerStateModel
-    {
-        public CircuitBreakerStateEnum State {get; set;}
-        public int ExceptionAttempt {get; set;}
-        public int SuccessAttempt {get; set;}
-        public Exception LastException {get; set;}
-        public DateTime LastStateChangedDateUtc {get; set;}
-        public bool IsClosed {get; set;}
+        public void AddStateModel(string key, CircuitBreakerStateModel circuitBreakerStateModel)
+        {
+            _store.TryAdd(key, circuitBreakerStateModel);
+        }
     }
 }
