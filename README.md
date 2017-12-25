@@ -1,7 +1,7 @@
 #   **Luffy**
 ------------------------------
 
-![alt tag](https://raw.githubusercontent.com/GokGokalp/Luffy/master/img/logo.jpg)
+![alt tag](https://raw.githubusercontent.com/GokGokalp/Luffy/master/img/logo.png)
 
 Luffy is a simple resilience and transient-fault handling library for .NET
 

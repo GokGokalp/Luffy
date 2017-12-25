@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Luffy</id>
+    <version>1.0.0</version>
+    <title>Luffy</title>
+    <authors>Gökhan Gökalp</authors>
+    <owners>Gökhan Gökalp</owners>
+    <projectUrl>https://github.com/GokGokalp/Luffy</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/GokGokalp/Luffy/master/img/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Luffy is a simple resilience and transient-fault handling library.</description>
+    <summary>Luffy is a simple resilience and transient-fault handling library.</summary>
+    <tags>resilience, transient-fault, circuit breaker, retry, fallback</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\Luffy.dll" exclude="bin\Release\netstandard2.0\*.dll.config" target="lib\netstandard2.0\Luffy.dll" />
+  </files>
+</package>
