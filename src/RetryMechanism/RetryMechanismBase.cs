@@ -57,8 +57,6 @@ namespace LuffyCore.RetryMechanism
                               WebExceptionStatus.ConnectFailure,
                               WebExceptionStatus.SendFailure}
                               .Contains(webException.Status);
-
-                return Task.FromResult(isTransient);
             }
 
             return Task.FromResult(isTransient);
