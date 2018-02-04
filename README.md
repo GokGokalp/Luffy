@@ -5,7 +5,7 @@
 
 Luffy is a simple resilience and transient-fault handling library for .NET
 
-[![NuGet version](https://badge.fury.io/nu/Jobber.svg)](https://badge.fury.io/nu/Luffy)
+[![NuGet version](https://badge.fury.io/nu/Luffy.svg)](https://badge.fury.io/nu/Luffy)
 
 ### NuGet Packages
 ``` 
